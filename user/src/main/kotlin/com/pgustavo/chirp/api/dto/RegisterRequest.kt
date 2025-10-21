@@ -13,5 +13,5 @@ data class RegisterRequest(
         regexp = "^(?=.*[\\d!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?])(.{8,})$",
         message = "Password must be at least 8 characters and contain at least one digit or special character"
     )
-    val password: String,
+    val password: String = "",
 )

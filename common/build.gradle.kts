@@ -1,10 +1,9 @@
 plugins {
     id("java-library")
     id("chirp.kotlin-common")
-    id("org.springframework.boot")
 }
 
-group = "com.pgustavo"
+group = "com.plcoding"
 version = "unspecified"
 
 repositories {
@@ -14,6 +13,9 @@ repositories {
 }
 
 dependencies {
+    api(libs.kotlin.reflect)
+    api(libs.jackson.module.kotlin)
+
     testImplementation(kotlin("test"))
 }
 
