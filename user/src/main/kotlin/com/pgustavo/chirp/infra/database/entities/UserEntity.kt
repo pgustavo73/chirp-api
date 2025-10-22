@@ -1,6 +1,6 @@
 package com.pgustavo.chirp.infra.database.entities
 
-import com.pgustavo.chirp.domain.model.UserID
+import com.pgustavo.chirp.domain.model.UserId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -24,7 +24,7 @@ import java.time.Instant
 class UserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UserID? = null,
+    var id: UserId? = null,
     @Column(nullable = false, unique = true)
     var email: String,
     @Column(nullable = false, unique = true)
