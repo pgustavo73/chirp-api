@@ -17,19 +17,20 @@ import java.time.Instant
     schema = "user_service",
     indexes = [
         Index(name = "idx_refresh_tokens_user_id", columnList = "user_id"),
-        Index(name = "idx_refresh_tokens_user_token", columnList = "user_id,hashed_token")
+        Index(name = "idx_refresh_tokens_user_token", columnList = "user_id,hashed_token"),
     ]
 )
-class RefreshTokenEntity (
+class RefreshTokenEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
     @Column(nullable = false)
     var userId: UserId,
-    @Column(nullable = false)
-    var expiresA: Instant,
+    @Column(nullable = false, name = "expiresa")
+    var expiresAt: Instant,
     @Column(nullable = false)
     var hashedToken: String,
     @CreationTimestamp
-    var createdAt: Instant = Instant.now()
+    @Column(name = "created_at", nullable = false, updatable = false)
+    var createdAt: Instant? = null
 )
