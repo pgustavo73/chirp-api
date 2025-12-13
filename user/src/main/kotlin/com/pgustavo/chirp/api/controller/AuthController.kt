@@ -1,14 +1,18 @@
 package com.pgustavo.chirp.api.controller
 
 import com.pgustavo.chirp.api.dto.AuthenticatedUserDto
+import com.pgustavo.chirp.api.dto.ChangePasswordRequest
+import com.pgustavo.chirp.api.dto.EmailRequest
 import com.pgustavo.chirp.api.dto.LoginRequest
 import com.pgustavo.chirp.api.dto.RefreshRequest
 import com.pgustavo.chirp.api.dto.RegisterRequest
+import com.pgustavo.chirp.api.dto.ResetPasswordRequest
 import com.pgustavo.chirp.api.dto.UserDto
 import com.pgustavo.chirp.api.mappers.toAuthenticatedUserDto
 import com.pgustavo.chirp.api.mappers.toUserDto
-import com.pgustavo.chirp.service.auth.AuthService
-import com.pgustavo.chirp.service.auth.EmailVerificationService
+import com.pgustavo.chirp.service.AuthService
+import com.pgustavo.chirp.service.EmailVerificationService
+import com.pgustavo.chirp.service.PasswordResetService
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val authService: AuthService,
     private val emailVerificationService: EmailVerificationService,
+    private val passwordResetService: PasswordResetService,
 ) {
 
     @PostMapping("/register")
@@ -66,5 +71,29 @@ class AuthController(
         @RequestParam token: String
     ){
         emailVerificationService.verifyEmail(token)
+    }
+
+    @PostMapping("forgot-password")
+    fun forgotPassword(
+        @Valid @RequestBody body: EmailRequest
+    ){
+        passwordResetService.requestPasswordReset(body.email)
+    }
+
+    @PostMapping("/reset-password")
+    fun resetPassword(
+        @Valid @RequestBody body: ResetPasswordRequest
+    ) {
+        passwordResetService.resetPassword(
+            token = body.token,
+            newPassword = body.newPassword
+        )
+    }
+
+    @PostMapping("/change-password")
+    fun changePassword(
+        @Valid @RequestBody body: ChangePasswordRequest
+    ) {
+        // TODO: Extract request user ID and call service
     }
 }

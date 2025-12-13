@@ -1,4 +1,4 @@
-package com.pgustavo.chirp.service.auth
+package com.pgustavo.chirp.service
 
 import com.pgustavo.chirp.domain.exception.InvalidTokenException
 import com.pgustavo.chirp.domain.model.UserId
