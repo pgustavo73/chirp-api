@@ -10,6 +10,7 @@ import com.pgustavo.chirp.api.dto.ResetPasswordRequest
 import com.pgustavo.chirp.api.dto.UserDto
 import com.pgustavo.chirp.api.mappers.toAuthenticatedUserDto
 import com.pgustavo.chirp.api.mappers.toUserDto
+import com.pgustavo.chirp.infra.rate_limiting.EmailRateLimiter
 import com.pgustavo.chirp.service.AuthService
 import com.pgustavo.chirp.service.EmailVerificationService
 import com.pgustavo.chirp.service.PasswordResetService
@@ -27,6 +28,7 @@ class AuthController(
     private val authService: AuthService,
     private val emailVerificationService: EmailVerificationService,
     private val passwordResetService: PasswordResetService,
+    private val emailRateLimiter: EmailRateLimiter,
 ) {
 
     @PostMapping("/register")
@@ -64,6 +66,17 @@ class AuthController(
         @RequestBody body: RefreshRequest
     ){
       authService.logout(body.refreshToken)
+    }
+
+    @PostMapping("/resend-verification")
+    fun resendVerification(
+        @Valid @RequestBody body: EmailRequest
+    ) {
+        emailRateLimiter.withRateLimit(
+            email = body.email
+        ) {
+            emailVerificationService.resenVerificationEmail(body.email)
+        }
     }
 
     @GetMapping("/verify")
