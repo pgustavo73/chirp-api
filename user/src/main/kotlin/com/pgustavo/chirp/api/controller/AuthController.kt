@@ -11,11 +11,14 @@ import com.pgustavo.chirp.api.dto.ResetPasswordRequest
 import com.pgustavo.chirp.api.dto.UserDto
 import com.pgustavo.chirp.api.mappers.toAuthenticatedUserDto
 import com.pgustavo.chirp.api.mappers.toUserDto
+import com.pgustavo.chirp.api.util.requestUserId
+import com.pgustavo.chirp.domain.model.UserId
 import com.pgustavo.chirp.infra.rate_limiting.EmailRateLimiter
 import com.pgustavo.chirp.service.AuthService
 import com.pgustavo.chirp.service.EmailVerificationService
 import com.pgustavo.chirp.service.PasswordResetService
 import jakarta.validation.Valid
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -134,6 +137,10 @@ class AuthController(
     fun changePassword(
         @Valid @RequestBody body: ChangePasswordRequest
     ) {
-        // TODO: Extract request user ID and call service
+        passwordResetService.changePassword(
+            userId = requestUserId,
+            oldPassword = body.oldPassword,
+            newPassword = body.newPassword,
+        )
     }
 }
