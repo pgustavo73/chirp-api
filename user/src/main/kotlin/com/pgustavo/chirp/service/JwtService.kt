@@ -1,7 +1,7 @@
 package com.pgustavo.chirp.service
 
 import com.pgustavo.chirp.domain.exception.InvalidTokenException
-import com.pgustavo.chirp.domain.model.UserId
+import com.pgustavo.chirp.domain.events.user.type.UserId
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys

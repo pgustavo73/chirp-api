@@ -1,5 +1,6 @@
 package com.pgustavo.chirp.service
 
+import com.pgustavo.chirp.domain.events.user.UserEvent
 import com.pgustavo.chirp.domain.exception.EmailNotVerifiedException
 import com.pgustavo.chirp.domain.exception.InvalidCredentialsException
 import com.pgustavo.chirp.domain.exception.InvalidTokenException
@@ -7,7 +8,8 @@ import com.pgustavo.chirp.domain.exception.UserAlreadyExistsException
 import com.pgustavo.chirp.domain.exception.UserNotFoundException
 import com.pgustavo.chirp.domain.model.AuthenticatedUser
 import com.pgustavo.chirp.domain.model.User
-import com.pgustavo.chirp.domain.model.UserId
+import com.pgustavo.chirp.domain.events.user.type.UserId
+import com.pgustavo.chirp.domain.infra.message_queue.EventPublisher
 import com.pgustavo.chirp.infra.database.entities.RefreshTokenEntity
 import com.pgustavo.chirp.infra.database.entities.UserEntity
 import com.pgustavo.chirp.infra.database.mappers.toUser
@@ -28,6 +30,7 @@ class AuthService(
     private val jwtService: JwtService,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val emailVerificationService: EmailVerificationService,
+    private val eventPublisher: EventPublisher,
 ) {
 
     @Transactional
@@ -50,6 +53,15 @@ class AuthService(
         ).toUser()
 
         val token = emailVerificationService.createVerificationToken(trimmedEmail)
+
+        eventPublisher.publish(
+            UserEvent.Created(
+                saveUser.id,
+                saveUser.email,
+                saveUser.username,
+                token.token,
+            )
+        )
 
         return saveUser
     }

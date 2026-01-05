@@ -4,7 +4,7 @@ import com.pgustavo.chirp.domain.exception.InvalidCredentialsException
 import com.pgustavo.chirp.domain.exception.InvalidTokenException
 import com.pgustavo.chirp.domain.exception.SamePasswordException
 import com.pgustavo.chirp.domain.exception.UserNotFoundException
-import com.pgustavo.chirp.domain.model.UserId
+import com.pgustavo.chirp.domain.events.user.type.UserId
 import com.pgustavo.chirp.infra.database.entities.PasswordResetTokenEntity
 import com.pgustavo.chirp.infra.database.repositories.PasswordResetTokenRepository
 import com.pgustavo.chirp.infra.database.repositories.RefreshTokenRepository

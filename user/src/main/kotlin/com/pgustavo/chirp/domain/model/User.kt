@@ -1,8 +1,8 @@
 package com.pgustavo.chirp.domain.model
 
-import java.util.UUID
+import com.pgustavo.chirp.domain.events.user.type.UserId
 
-typealias UserId = UUID
+
 
 data class User(
     val id: UserId,

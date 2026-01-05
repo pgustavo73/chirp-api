@@ -1,6 +1,6 @@
 package com.pgustavo.chirp.infra.database.entities
 
-import com.pgustavo.chirp.domain.model.UserId
+import com.pgustavo.chirp.domain.events.user.type.UserId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

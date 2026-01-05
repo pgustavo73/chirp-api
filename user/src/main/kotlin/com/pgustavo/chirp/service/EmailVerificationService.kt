@@ -1,7 +1,9 @@
 package com.pgustavo.chirp.service
 
+import com.pgustavo.chirp.domain.events.user.UserEvent
 import com.pgustavo.chirp.domain.exception.InvalidTokenException
 import com.pgustavo.chirp.domain.exception.UserNotFoundException
+import com.pgustavo.chirp.domain.infra.message_queue.EventPublisher
 import com.pgustavo.chirp.domain.model.EmailVerificationToken
 import com.pgustavo.chirp.infra.database.entities.EmailVerificationTokenEntity
 import com.pgustavo.chirp.infra.database.mappers.toEmailVerificationToken
@@ -19,11 +21,26 @@ import java.time.temporal.ChronoUnit
 class EmailVerificationService(
     private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
     private val userRepository: UserRepository,
-    @param:Value("\${chirp.email.verification.expiry-hours}") private val expiryHours: Long
+    @param:Value("\${chirp.email.verification.expiry-hours}") private val expiryHours: Long,
+    private val eventPublisher: EventPublisher,
 ) {
 
+    @Transactional
     fun resenVerificationEmail(email: String){
-        //TODO:  Trigger resend
+        val token = createVerificationToken(email)
+
+        if (token.user.hasEmailVerified){
+            return
+        }
+
+       eventPublisher.publish(
+           UserEvent.RequestResendVerification(
+               token.user.id,
+               token.user.email,
+               token.user.username,
+               token.token
+           )
+       )
     }
 
     @Transactional

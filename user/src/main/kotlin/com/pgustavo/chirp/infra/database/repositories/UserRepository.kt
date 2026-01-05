@@ -1,6 +1,6 @@
 package com.pgustavo.chirp.infra.database.repositories
 
-import com.pgustavo.chirp.domain.model.UserId
+import com.pgustavo.chirp.domain.events.user.type.UserId
 import com.pgustavo.chirp.infra.database.entities.UserEntity
 import org.springframework.data.jpa.repository.JpaRepository
 

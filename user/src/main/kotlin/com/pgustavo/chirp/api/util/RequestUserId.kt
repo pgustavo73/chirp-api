@@ -1,7 +1,7 @@
 package com.pgustavo.chirp.api.util
 
 import com.pgustavo.chirp.domain.exception.UnauthorizedException
-import com.pgustavo.chirp.domain.model.UserId
+import com.pgustavo.chirp.domain.events.user.type.UserId
 import org.springframework.security.core.context.SecurityContextHolder
 
 val requestUserId: UserId
