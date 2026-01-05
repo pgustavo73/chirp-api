@@ -40,6 +40,26 @@ spring:
         format_sql: true
         show_sql: true
 
+  rabbitmq:
+    host: collie.lmq.cloudamqp.com
+    password: ${RABBITMQ_PASSWORD}
+    username: fjkjnibi
+    ssl:
+      enable: true
+    virtual-host: fjkjnibi
+    listener:
+      simple:
+        acknowledge-mode: auto
+        concurrency: 1
+        max-concurrency: 3
+        prefetch: 10
+        retry:
+          enable: true
+          initial-interval: 1000ms
+          max-interval: 10000ms
+          max-attempts: 3
+
+
 jwp:
   secret: ${JWT_SECRET_BASE64}
   expiration-minutes: 15
