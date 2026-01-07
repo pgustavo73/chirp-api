@@ -1,10 +1,12 @@
 package com.pgustavo.chirp.service
 
+import com.pgustavo.chirp.domain.events.user.UserEvent
 import com.pgustavo.chirp.domain.exception.InvalidCredentialsException
 import com.pgustavo.chirp.domain.exception.InvalidTokenException
 import com.pgustavo.chirp.domain.exception.SamePasswordException
 import com.pgustavo.chirp.domain.exception.UserNotFoundException
 import com.pgustavo.chirp.domain.events.user.type.UserId
+import com.pgustavo.chirp.domain.infra.message_queue.EventPublisher
 import com.pgustavo.chirp.infra.database.entities.PasswordResetTokenEntity
 import com.pgustavo.chirp.infra.database.repositories.PasswordResetTokenRepository
 import com.pgustavo.chirp.infra.database.repositories.RefreshTokenRepository
@@ -25,7 +27,8 @@ class PasswordResetService(
     private val passwordEncoder: PasswordEncoder,
     @param:Value("\${chirp.email.reset-password.expiry-minutes}")
     private val expiryMinutes: Long,
-    private val refreshTokenRepository: RefreshTokenRepository
+    private val refreshTokenRepository: RefreshTokenRepository,
+    private val eventPublisher: EventPublisher,
 ) {
     @Transactional
     fun requestPasswordReset(email: String) {
@@ -39,7 +42,16 @@ class PasswordResetService(
         )
         passwordResetTokenRepository.save(token)
 
-        // TODO: Inform notification service about password reset trigger to send email
+        eventPublisher.publish(
+            UserEvent.RequestResetPassword(
+                user.id!!,
+                user.email,
+                user.username,
+                token.token,
+                expiryMinutes,
+            )
+
+        )
     }
 
     @Transactional

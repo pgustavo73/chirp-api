@@ -2,6 +2,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  mail:
+    host: smtp.mailgun.org
+    username: pgsa73@sandboxf3e65bb776bc41caacf3257e54232862.mailgun.org
 
 jwt:
   secret: ${JWT_SECRET_BASE64}
@@ -11,6 +14,8 @@ nginx:
   require-proxy: false
 
 chirp:
+  email:
+    url: "http://localhost:8080"
   rate-limit:
     ip:
       apply-limit: true
