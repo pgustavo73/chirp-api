@@ -1,0 +1,92 @@
+package com.pgustavo.chat.service
+
+import com.pgustavo.chat.domain.events.user.UserEvent
+import com.pgustavo.chat.domain.exception.InvalidTokenException
+import com.pgustavo.chat.domain.exception.UserNotFoundException
+import com.pgustavo.chat.domain.infra.message_queue.EventPublisher
+import com.pgustavo.chat.domain.model.EmailVerificationToken
+import com.pgustavo.chat.infra.database.entities.EmailVerificationTokenEntity
+import com.pgustavo.chat.infra.database.mappers.toEmailVerificationToken
+import com.pgustavo.chat.infra.database.mappers.toUser
+import com.pgustavo.chat.infra.database.repositories.EmailVerificationTokenRepository
+import com.pgustavo.chat.infra.database.repositories.UserRepository
+import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Service
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+
+@Service
+class EmailVerificationService(
+    private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
+    private val userRepository: UserRepository,
+    @param:Value("\${chirp.email.verification.expiry-hours}") private val expiryHours: Long,
+    private val eventPublisher: EventPublisher,
+) {
+
+    @Transactional
+    fun resenVerificationEmail(email: String){
+        val token = createVerificationToken(email)
+
+        if (token.user.hasEmailVerified){
+            return
+        }
+
+       eventPublisher.publish(
+           UserEvent.RequestResendVerification(
+               token.user.id,
+               token.user.email,
+               token.user.username,
+               token.token
+           )
+       )
+    }
+
+    @Transactional
+    fun createVerificationToken(email: String): EmailVerificationToken {
+        val userEntity = userRepository.findByEmail(email)
+            ?: throw UserNotFoundException()
+
+        emailVerificationTokenRepository.invalidateActiveTokensForUser(userEntity)
+
+        val token = EmailVerificationTokenEntity(
+            expiresAt = Instant.now().plus(expiryHours, ChronoUnit.HOURS),
+            user = userEntity
+        )
+
+        return emailVerificationTokenRepository.save(token).toEmailVerificationToken()
+    }
+
+    @Transactional
+    fun verifyEmail(token: String) {
+        val verificationToken = emailVerificationTokenRepository.findByToken(token)
+            ?: throw InvalidTokenException("Email verification token is invalid.")
+
+        if(verificationToken.isUsed) {
+            throw InvalidTokenException("Email verification token is already used.")
+        }
+
+        if(verificationToken.isExpired) {
+            throw InvalidTokenException("Email verification token has already expired.")
+        }
+
+        emailVerificationTokenRepository.save(
+            verificationToken.apply {
+                this.usedAt = Instant.now()
+            }
+        )
+        userRepository.save(
+            verificationToken.user.apply {
+                this.hasVerifiedEmail = true
+            }
+        ).toUser()
+    }
+
+    @Scheduled(cron = "0 0 3 * * *")
+    fun cleanupExpiredTokens() {
+        emailVerificationTokenRepository.deleteByExpiresAtLessThan(
+            now = Instant.now()
+        )
+    }
+}
