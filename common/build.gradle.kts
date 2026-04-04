@@ -3,7 +3,7 @@ plugins {
     id("chirp.kotlin-common")
 }
 
-group = "com.plcoding"
+group = "com.pgustavo"
 version = "unspecified"
 
 repositories {
@@ -17,6 +17,7 @@ dependencies {
     api(libs.jackson.module.kotlin)
 
     implementation(libs.spring.boot.starter.amqp)
+    implementation(libs.spring.boot.starter.security)
     testImplementation(kotlin("test"))
 }
 

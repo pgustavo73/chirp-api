@@ -4,10 +4,10 @@ spring:
 
   data:
     redis:
-      host: "redis-13010.c10.us-east-1-4.ec2.cloud.redislabs.com"
+      host: 34.229.163.246
       password: ${REDIS_PASSWORD}
       username: "default"
-      port: 13010
+      port: 10219
       connect-timeout: 5000ms
       timeout: 2000ms
 
@@ -18,7 +18,7 @@ spring:
     driver-class-name: org.postgresql.Driver
 
     hikari:
-      maximum-poll-size: 10
+      maximum-pool-size: 10
       minimum-idle: 5
       connection-timeout: 20000
       idle-timeout: 30000
@@ -26,7 +26,7 @@ spring:
       validation-timeout: 5000
       pool-name: SpringBootHikariCP
       data-source-properties:
-        prepareThreshold: 5
+        prepareThreshold: 0
         preparedStatementCacheQueries: 256
         preparedStatementCacheSizeMib: 5
 
@@ -35,6 +35,7 @@ spring:
         connectTimeout: 10
   jpa:
     properties:
+      hibernate.default_schema: chat_service
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
