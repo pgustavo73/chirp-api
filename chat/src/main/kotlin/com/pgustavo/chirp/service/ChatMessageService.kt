@@ -1,7 +1,5 @@
 package com.pgustavo.chirp.service
 
-import com.pgustavo.chirp.api.dto.ChatMessageDto
-import com.pgustavo.chirp.api.mappers.toChatMessageDto
 import com.pgustavo.chirp.domain.exception.ChatNotFoundException
 import com.pgustavo.chirp.domain.exception.MessageNotFoundException
 import com.pgustavo.chirp.domain.execption.ForbiddenException
@@ -15,10 +13,8 @@ import com.pgustavo.chirp.infra.database.repositories.ChatMessageRepository
 import com.pgustavo.chirp.infra.database.repositories.ChatParticipantRepository
 import com.pgustavo.chirp.infra.database.repositories.ChatRepository
 import jakarta.transaction.Transactional
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.time.Instant
 
 @Service
 class ChatMessageService(
@@ -26,21 +22,6 @@ class ChatMessageService(
     private val chatMessageRepository: ChatMessageRepository,
     private val chatParticipantRepository: ChatParticipantRepository,
 ) {
-    fun getChatMessages(
-        chatId: ChatId,
-        before: Instant?,
-        pageSize: Int,
-    ): List<ChatMessageDto> {
-        return chatMessageRepository
-            .findByChatIdBefore(
-                chatId = chatId,
-                before = before ?: Instant.now(),
-                pageable = PageRequest.of(0, pageSize)
-            )
-            .content
-            .asReversed()
-            .map { it.toChatMessage().toChatMessageDto() }
-    }
 
     @Transactional
     fun sendMessage(
@@ -68,7 +49,7 @@ class ChatMessageService(
 
     @Transactional
     fun deleteMessage(
-        messageId : ChatMessageId,
+        messageId: ChatMessageId,
         requestUserId: UserId,
     ) {
         val message = chatMessageRepository.findByIdOrNull(messageId)

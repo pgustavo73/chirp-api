@@ -1,13 +1,15 @@
 package com.pgustavo.chirp.service
 
+import com.pgustavo.chirp.api.dto.ChatMessageDto
+import com.pgustavo.chirp.api.mappers.toChatMessageDto
 import com.pgustavo.chirp.domain.exception.ChatNotFoundException
-import com.pgustavo.chirp.domain.type.UserId
 import com.pgustavo.chirp.domain.exception.ChatParticipantNotFoundException
 import com.pgustavo.chirp.domain.exception.InvalidChatSizeException
 import com.pgustavo.chirp.domain.execption.ForbiddenException
 import com.pgustavo.chirp.domain.models.Chat
 import com.pgustavo.chirp.domain.models.ChatId
 import com.pgustavo.chirp.domain.models.ChatMessage
+import com.pgustavo.chirp.domain.type.UserId
 import com.pgustavo.chirp.infra.database.entities.ChatEntity
 import com.pgustavo.chirp.infra.database.mappers.toChat
 import com.pgustavo.chirp.infra.database.mappers.toChatMessage
@@ -15,8 +17,10 @@ import com.pgustavo.chirp.infra.database.repositories.ChatMessageRepository
 import com.pgustavo.chirp.infra.database.repositories.ChatParticipantRepository
 import com.pgustavo.chirp.infra.database.repositories.ChatRepository
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.time.Instant
 
 @Service
 class ChatService(
@@ -24,6 +28,22 @@ class ChatService(
     private val chatParticipantRepository: ChatParticipantRepository,
     private val chatMessageRepository: ChatMessageRepository,
 ) {
+
+    fun getChatMessages(
+        chatId: ChatId,
+        before: Instant?,
+        pageSize: Int,
+    ): List<ChatMessageDto> {
+        return chatMessageRepository
+            .findByChatIdBefore(
+                chatId = chatId,
+                before = before ?: Instant.now(),
+                pageable = PageRequest.of(0, pageSize)
+            )
+            .content
+            .asReversed()
+            .map { it.toChatMessage().toChatMessageDto() }
+    }
 
     @Transactional
     fun createChat(
