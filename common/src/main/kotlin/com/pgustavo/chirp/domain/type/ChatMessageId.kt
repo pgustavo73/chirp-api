@@ -1,4 +1,4 @@
-package com.pgustavo.chirp.domain.models
+package com.pgustavo.chirp.domain.type
 
 import java.util.UUID
 

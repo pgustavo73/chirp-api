@@ -1,7 +1,7 @@
 package com.pgustavo.chirp.infra.database.repositories
 
-import com.pgustavo.chirp.domain.models.ChatId
-import com.pgustavo.chirp.domain.models.ChatMessageId
+import com.pgustavo.chirp.domain.type.ChatId
+import com.pgustavo.chirp.domain.type.ChatMessageId
 import com.pgustavo.chirp.infra.database.entities.ChatMessageEntity
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice

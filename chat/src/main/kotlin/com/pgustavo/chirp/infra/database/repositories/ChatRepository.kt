@@ -1,7 +1,7 @@
 package com.pgustavo.chirp.infra.database.repositories
 
 import com.pgustavo.chirp.domain.type.UserId
-import com.pgustavo.chirp.domain.models.ChatId
+import com.pgustavo.chirp.domain.type.ChatId
 import com.pgustavo.chirp.infra.database.entities.ChatEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

@@ -6,8 +6,7 @@ import com.pgustavo.chirp.api.dto.ChatMessageDto
 import com.pgustavo.chirp.api.dto.CreateChatRequest
 import com.pgustavo.chirp.api.mappers.toChatDto
 import com.pgustavo.chirp.api.util.requestUserId
-import com.pgustavo.chirp.domain.models.ChatId
-import com.pgustavo.chirp.service.ChatMessageService
+import com.pgustavo.chirp.domain.type.ChatId
 import com.pgustavo.chirp.service.ChatService
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*

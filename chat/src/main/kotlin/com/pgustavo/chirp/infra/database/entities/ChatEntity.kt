@@ -1,6 +1,6 @@
 package com.pgustavo.chirp.infra.database.entities
 
-import com.pgustavo.chirp.domain.models.ChatId
+import com.pgustavo.chirp.domain.type.ChatId
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue

@@ -2,12 +2,14 @@ package com.pgustavo.chirp.service
 
 import com.pgustavo.chirp.api.dto.ChatMessageDto
 import com.pgustavo.chirp.api.mappers.toChatMessageDto
+import com.pgustavo.chirp.domain.event.ChatParticipantJoinedEvent
+import com.pgustavo.chirp.domain.event.ChatParticipantLeftEvent
 import com.pgustavo.chirp.domain.exception.ChatNotFoundException
 import com.pgustavo.chirp.domain.exception.ChatParticipantNotFoundException
 import com.pgustavo.chirp.domain.exception.InvalidChatSizeException
 import com.pgustavo.chirp.domain.execption.ForbiddenException
 import com.pgustavo.chirp.domain.models.Chat
-import com.pgustavo.chirp.domain.models.ChatId
+import com.pgustavo.chirp.domain.type.ChatId
 import com.pgustavo.chirp.domain.models.ChatMessage
 import com.pgustavo.chirp.domain.type.UserId
 import com.pgustavo.chirp.infra.database.entities.ChatEntity
@@ -17,6 +19,7 @@ import com.pgustavo.chirp.infra.database.repositories.ChatMessageRepository
 import com.pgustavo.chirp.infra.database.repositories.ChatParticipantRepository
 import com.pgustavo.chirp.infra.database.repositories.ChatRepository
 import jakarta.transaction.Transactional
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -27,6 +30,7 @@ class ChatService(
     private val chatRepository: ChatRepository,
     private val chatParticipantRepository: ChatParticipantRepository,
     private val chatMessageRepository: ChatMessageRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
     fun getChatMessages(
@@ -98,6 +102,13 @@ class ChatService(
             }
         ).toChat(lastMessage)
 
+        applicationEventPublisher.publishEvent(
+            ChatParticipantJoinedEvent(
+                chatId = chatId,
+                userId = userIds,
+            )
+        )
+
         return updatedChat
     }
 
@@ -122,6 +133,13 @@ class ChatService(
             chat.apply {
                 this.participants = chat.participants - participant
             }
+        )
+
+        applicationEventPublisher.publishEvent(
+            ChatParticipantLeftEvent(
+                chatId = chatId,
+                userId = userId,
+            )
         )
     }
 

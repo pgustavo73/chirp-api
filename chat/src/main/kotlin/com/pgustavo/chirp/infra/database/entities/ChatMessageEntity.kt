@@ -1,7 +1,7 @@
 package com.pgustavo.chirp.infra.database.entities
 
-import com.pgustavo.chirp.domain.models.ChatId
-import com.pgustavo.chirp.domain.models.ChatMessageId
+import com.pgustavo.chirp.domain.type.ChatId
+import com.pgustavo.chirp.domain.type.ChatMessageId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType

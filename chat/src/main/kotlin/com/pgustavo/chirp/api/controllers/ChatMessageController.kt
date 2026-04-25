@@ -1,7 +1,7 @@
 package com.pgustavo.chirp.api.controllers
 
 import com.pgustavo.chirp.api.util.requestUserId
-import com.pgustavo.chirp.domain.models.ChatMessageId
+import com.pgustavo.chirp.domain.type.ChatMessageId
 import com.pgustavo.chirp.service.ChatMessageService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
