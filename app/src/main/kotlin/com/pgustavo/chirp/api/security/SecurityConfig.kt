@@ -1,4 +1,4 @@
-package com.pgustavo.chirp.security
+package com.pgustavo.chirp.api.security
 
 import com.pgustavo.chirp.api.config.JwtAuthFilter
 import jakarta.servlet.DispatcherType

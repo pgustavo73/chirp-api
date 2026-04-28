@@ -16,6 +16,7 @@ import com.pgustavo.chirp.infra.database.repositories.ChatMessageRepository
 import com.pgustavo.chirp.infra.database.repositories.ChatParticipantRepository
 import com.pgustavo.chirp.infra.database.repositories.ChatRepository
 import jakarta.transaction.Transactional
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -30,6 +31,10 @@ class ChatMessageService(
 ) {
 
     @Transactional
+    @CacheEvict(
+        value = ["messages"],
+        key = "#chatId",
+        )
     fun sendMessage(
         chatId: ChatId,
         senderId: UserId,
@@ -67,7 +72,7 @@ class ChatMessageService(
     fun deleteMessage(
         messageId: ChatMessageId,
         requestUserId: UserId,
-    ) {
+    ){
         val message = chatMessageRepository.findByIdOrNull(messageId)
             ?: throw MessageNotFoundException(messageId)
 
@@ -82,5 +87,14 @@ class ChatMessageService(
                 messageId = messageId,
             )
         )
+        evictMessagesCache(message.chatId)
+    }
+
+    @CacheEvict(
+        value = ["messages"],
+        key = "#chatId",
+    )
+    fun evictMessagesCache(chatId: ChatId){
+        // NO-OP: Let Spring handle the cache evict
     }
 }
