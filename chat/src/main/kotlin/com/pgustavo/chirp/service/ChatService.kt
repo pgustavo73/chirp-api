@@ -1,5 +1,6 @@
 package com.pgustavo.chirp.service
 
+import com.pgustavo.chirp.api.dto.ChatDto
 import com.pgustavo.chirp.api.dto.ChatMessageDto
 import com.pgustavo.chirp.api.mappers.toChatMessageDto
 import com.pgustavo.chirp.domain.event.ChatParticipantJoinedEvent
@@ -54,6 +55,21 @@ class ChatService(
             .content
             .asReversed()
             .map { it.toChatMessage().toChatMessageDto() }
+    }
+
+    fun getChatById(chatId: ChatId, requestUserId: UserId): Chat? {
+        return chatRepository
+            .findChatById(chatId, requestUserId)
+            ?.toChat(lastMessageForChat(chatId))
+    }
+
+    fun findChatByUser(userId: UserId): List<Chat> {
+        val chatEntities = chatRepository.findAllByUserId(userId)
+        val chatIds = chatEntities.mapNotNull { it.id }
+        val lastMessages = chatMessageRepository.findLatestMessageByChatIds(chatIds.toSet()).associateBy { it.chatId }
+
+        return chatEntities.map{ it.toChat( lastMessage = lastMessages[it.id]?.toChatMessage())}
+            .sortedBy { it.lastActivityAt }
     }
 
     @Transactional

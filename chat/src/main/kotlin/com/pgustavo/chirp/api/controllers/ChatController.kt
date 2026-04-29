@@ -7,9 +7,12 @@ import com.pgustavo.chirp.api.dto.CreateChatRequest
 import com.pgustavo.chirp.api.mappers.toChatDto
 import com.pgustavo.chirp.api.util.requestUserId
 import com.pgustavo.chirp.domain.type.ChatId
+import com.pgustavo.chirp.domain.type.UserId
 import com.pgustavo.chirp.service.ChatService
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
 @RestController
@@ -32,6 +35,23 @@ class ChatController(
             before = before,
             pageSize = pageSize,
         )
+    }
+
+    @GetMapping("/{chatId}")
+    fun getChat(
+        @PathVariable("chatId") chatId: ChatId,
+    ): ChatDto {
+        return chatService.getChatById(
+            chatId = chatId,
+            requestUserId = requestUserId
+        )?.toChatDto() ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    }
+
+    @GetMapping
+    fun getChatForUser(): List<ChatDto> {
+        return chatService.findChatByUser(
+            userId = requestUserId,
+        ).map { it.toChatDto() }
     }
 
     @PostMapping
