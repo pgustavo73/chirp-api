@@ -1,6 +1,5 @@
 package com.pgustavo.chirp.service
 
-import com.pgustavo.chirp.api.dto.ChatDto
 import com.pgustavo.chirp.api.dto.ChatMessageDto
 import com.pgustavo.chirp.api.mappers.toChatMessageDto
 import com.pgustavo.chirp.domain.event.ChatParticipantJoinedEvent
@@ -40,7 +39,7 @@ class ChatService(
         key = "#chatId",
         condition = "#before == null && #pageSize <= 50",
         sync = true,
-        )
+    )
     fun getChatMessages(
         chatId: ChatId,
         before: Instant?,
@@ -63,12 +62,12 @@ class ChatService(
             ?.toChat(lastMessageForChat(chatId))
     }
 
-    fun findChatByUser(userId: UserId): List<Chat> {
+    fun findChatsByUser(userId: UserId): List<Chat> {
         val chatEntities = chatRepository.findAllByUserId(userId)
         val chatIds = chatEntities.mapNotNull { it.id }
         val lastMessages = chatMessageRepository.findLatestMessageByChatIds(chatIds.toSet()).associateBy { it.chatId }
 
-        return chatEntities.map{ it.toChat( lastMessage = lastMessages[it.id]?.toChatMessage())}
+        return chatEntities.map { it.toChat(lastMessage = lastMessages[it.id]?.toChatMessage()) }
             .sortedBy { it.lastActivityAt }
     }
 
@@ -79,7 +78,7 @@ class ChatService(
     ): Chat {
         val otherParticipants = chatParticipantRepository.findByUserIdIn(
             userIds = otherUserIds,
-            )
+        )
 
         val allParticipants = (otherParticipants + creatorId)
         if (allParticipants.size < 2) {
@@ -102,7 +101,7 @@ class ChatService(
         requestUserId: UserId,
         chatId: ChatId,
         userIds: Set<UserId>,
-    ): Chat{
+    ): Chat {
         val chat = chatRepository.findByIdOrNull(chatId)
             ?: throw ChatNotFoundException()
 
@@ -146,7 +145,7 @@ class ChatService(
             it.userId == userId
         } ?: throw ChatParticipantNotFoundException(userId)
 
-        val newParticipantSize = chat.participants.size -1
+        val newParticipantSize = chat.participants.size - 1
         if (newParticipantSize == 0) {
             chatRepository.deleteById(chatId)
             return

@@ -7,7 +7,6 @@ import com.pgustavo.chirp.api.dto.CreateChatRequest
 import com.pgustavo.chirp.api.mappers.toChatDto
 import com.pgustavo.chirp.api.util.requestUserId
 import com.pgustavo.chirp.domain.type.ChatId
-import com.pgustavo.chirp.domain.type.UserId
 import com.pgustavo.chirp.service.ChatService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -49,7 +48,7 @@ class ChatController(
 
     @GetMapping
     fun getChatForUser(): List<ChatDto> {
-        return chatService.findChatByUser(
+        return chatService.findChatsByUser(
             userId = requestUserId,
         ).map { it.toChatDto() }
     }
