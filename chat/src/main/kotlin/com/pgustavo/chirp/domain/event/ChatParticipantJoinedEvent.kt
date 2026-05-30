@@ -5,5 +5,5 @@ import com.pgustavo.chirp.domain.type.UserId
 
 data class ChatParticipantJoinedEvent(
     val chatId: ChatId,
-    val userId: Set<UserId>,
+    val userIds: Set<UserId>,
 )

@@ -127,7 +127,7 @@ class ChatService(
         applicationEventPublisher.publishEvent(
             ChatParticipantJoinedEvent(
                 chatId = chatId,
-                userId = userIds,
+                userIds = userIds,
             )
         )
 
